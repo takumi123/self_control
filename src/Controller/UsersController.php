@@ -2,6 +2,9 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Mailer\Email;
+use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 
 /**
  * Users Controller
@@ -13,6 +16,16 @@ use App\Controller\AppController;
 class UsersController extends AppController
 {
 
+    public $components = ["Mail"];
+
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Auth->allow(['*']);
+    }
+
+
+
     /**
      * Index method
      *
@@ -21,9 +34,12 @@ class UsersController extends AppController
     public function index()
     {
         $users = $this->paginate($this->Users);
-
         $this->set(compact('users'));
+
+
     }
+
+
 
     /**
      * View method
@@ -37,8 +53,9 @@ class UsersController extends AppController
         $user = $this->Users->get($id, [
             'contain' => ['ActionLogs', 'Actions', 'GoalLogs', 'Goals']
         ]);
-
         $this->set('user', $user);
+
+
     }
 
     /**
@@ -51,15 +68,62 @@ class UsersController extends AppController
         $user = $this->Users->newEntity();
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
+
+            #randomな値をDBとメール共通にして、確認を取る。
+            $random = hash("sha256",date("F j, Y, g:i a"));
+            $user->random_value = $random;
+            $link = Router::url(["controller"=>"Users","action"=>"active",$random],true);
+            $this->Mail->add_user("takumi.endoh111@gmail.com",$link);
+
+            debug($this->Users->save($user));
+
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('The user has been saved.'));
-
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
         $this->set(compact('user'));
     }
+
+
+    public function active($random_value = null)
+    {
+        $query = $this->Users->find("all",["conditions"=>["Users.random_value"=>$random_value]]);
+        $user = $query->first();
+
+        //24時間以内なら
+
+
+        $user->auth = 1;
+        if (!empty($user)){
+            $this->Users->save($user);
+            $this->Flash->success(__("登録が完了しました！"));
+            return $this->redirect(['action' => 'login']);
+        }else{
+
+        }
+        $this->autoRender = false;
+    }
+
+    public function login()
+    {
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if ($user) {
+                $this->Auth->setUser($user);
+                return $this->redirect($this->Auth->redirectUrl());
+            }
+            $this->Flash->error(__('ユーザ名もしくはパスワードが間違っています'));
+        }
+    }
+
+    public function logout()
+    {
+        return $this->redirect($this->Auth->logout());
+    }
+
+
 
     /**
      * Edit method

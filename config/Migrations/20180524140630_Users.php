@@ -42,13 +42,15 @@ class Users extends AbstractMigration
             'default' => "week",
             'null' => false,
         ]);
-        $table->addColumn('activate', 'integer', [
-            'default' => 0,
-            'null' => false,
-        ]);
         $table->addColumn('type', 'integer', [
             'default' => 1,
             'null' => false,
+        ]);
+        $table->addColumn('auth', 'integer', [
+            'default' => 0
+        ]);
+        $table->addColumn('random_value', 'string', [
+            'default' => null
         ]);
         $table->addColumn('created', 'datetime', [
             'default' => null,

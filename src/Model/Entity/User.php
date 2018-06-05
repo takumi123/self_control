@@ -51,7 +51,8 @@ class User extends Entity
         'action_logs' => true,
         'actions' => true,
         'goal_logs' => true,
-        'goals' => true
+        'goals' => true,
+        'random_value' =>true
     ];
 
     /**

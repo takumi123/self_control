@@ -100,19 +100,13 @@ class UsersTable extends Table
 
         $validator
             ->scalar('display_cycle_time')
-            ->maxLength('display_cycle_time', 255)
-            ->requirePresence('display_cycle_time', 'create')
-            ->notEmpty('display_cycle_time');
+            ->maxLength('display_cycle_time', 255);
 
         $validator
-            ->integer('activate')
-            ->requirePresence('activate', 'create')
-            ->notEmpty('activate');
+            ->integer('activate');
 
         $validator
-            ->integer('type')
-            ->requirePresence('type', 'create')
-            ->notEmpty('type');
+            ->integer('type');
 
         return $validator;
     }
