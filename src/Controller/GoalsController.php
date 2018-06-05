@@ -1,8 +1,6 @@
 <?php
 namespace App\Controller;
 
-use App\Controller\AppController;
-
 /**
  * Goals Controller
  *
@@ -26,6 +24,8 @@ class GoalsController extends AppController
         $goals = $this->paginate($this->Goals);
 
         $this->set(compact('goals'));
+
+
     }
 
     /**
