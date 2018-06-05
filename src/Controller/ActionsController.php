@@ -26,6 +26,10 @@ class ActionsController extends AppController
         $actions = $this->paginate($this->Actions);
 
         $this->set(compact('actions'));
+
+
+
+
     }
 
     /**
